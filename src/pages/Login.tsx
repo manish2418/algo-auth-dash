@@ -4,39 +4,35 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "@/hooks/use-toast";
-import { Mail, Phone, TrendingUp } from "lucide-react";
+import { Phone, TrendingUp, Lock } from "lucide-react";
 import tradingBg from "@/assets/trading-bg.jpg";
 
 const Login = () => {
-  const [email, setEmail] = useState("");
   const [mobile, setMobile] = useState("");
+  const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
-  const handleLogin = (type: 'email' | 'mobile') => {
-    const value = type === 'email' ? email : mobile;
-    
-    if (!value) {
+  const handleLogin = () => {
+    if (!mobile) {
       toast({
         title: "Required Field",
-        description: `Please enter your ${type}`,
+        description: "Please enter your mobile number",
         variant: "destructive",
       });
       return;
     }
 
-    // Simple validation
-    if (type === 'email' && !value.includes('@')) {
+    if (!password) {
       toast({
-        title: "Invalid Email",
-        description: "Please enter a valid email address",
+        title: "Required Field", 
+        description: "Please enter your password",
         variant: "destructive",
       });
       return;
     }
 
-    if (type === 'mobile' && value.length < 10) {
+    if (mobile.length < 10) {
       toast({
         title: "Invalid Mobile",
         description: "Please enter a valid mobile number",
@@ -45,13 +41,22 @@ const Login = () => {
       return;
     }
 
-    // Store login method for OTP verification
-    localStorage.setItem('loginMethod', type);
-    localStorage.setItem('loginValue', value);
+    if (password.length < 6) {
+      toast({
+        title: "Invalid Password",
+        description: "Password must be at least 6 characters",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Store login info for OTP verification
+    localStorage.setItem('loginMethod', 'mobile');
+    localStorage.setItem('loginValue', mobile);
 
     toast({
       title: "OTP Sent",
-      description: `Verification code sent to your ${type}`,
+      description: "Verification code sent to your mobile number",
     });
 
     navigate('/otp');
@@ -85,58 +90,44 @@ const Login = () => {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <Tabs defaultValue="mobile" className="w-full">
-              <TabsList className="grid w-full grid-cols-2">
-                <TabsTrigger value="mobile" className="flex items-center gap-2">
-                  <Phone className="h-4 w-4" />
-                  Mobile
-                </TabsTrigger>
-                <TabsTrigger value="email" className="flex items-center gap-2">
-                  <Mail className="h-4 w-4" />
-                  Email
-                </TabsTrigger>
-              </TabsList>
-              
-              <TabsContent value="mobile" className="space-y-4 mt-6">
-                <div className="space-y-2">
-                  <Label htmlFor="mobile">Mobile Number</Label>
+            <div className="space-y-4 mt-6">
+              <div className="space-y-2">
+                <Label htmlFor="mobile">Mobile Number</Label>
+                <div className="relative">
+                  <Phone className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                   <Input
                     id="mobile"
                     type="tel"
                     placeholder="Enter your mobile number"
                     value={mobile}
                     onChange={(e) => setMobile(e.target.value)}
-                    className="transition-all duration-200"
+                    className="pl-10 transition-all duration-200"
                   />
                 </div>
-                <Button 
-                  onClick={() => handleLogin('mobile')} 
-                  className="w-full bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-primary-foreground font-semibold py-3 transition-all duration-300 shadow-lg hover:shadow-xl"
-                >
-                  Send OTP
-                </Button>
-              </TabsContent>
+              </div>
               
-              <TabsContent value="email" className="space-y-4 mt-6">
-                <div className="space-y-2">
-                  <Label htmlFor="email">Email Address</Label>
+              <div className="space-y-2">
+                <Label htmlFor="password">Password</Label>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                   <Input
-                    id="email"
-                    type="email"
-                    placeholder="Enter your email address"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="transition-all duration-200"
+                    id="password"
+                    type="password"
+                    placeholder="Enter your password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="pl-10 transition-all duration-200"
                   />
                 </div>
-                <Button 
-                  onClick={() => handleLogin('email')} 
-                  className="w-full bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-primary-foreground font-semibold py-3 transition-all duration-300 shadow-lg hover:shadow-xl"
-                >
-                  Send OTP
-                </Button>
-              </TabsContent>
-            </Tabs>
+              </div>
+              
+              <Button 
+                onClick={handleLogin} 
+                className="w-full bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-primary-foreground font-semibold py-3 transition-all duration-300 shadow-lg hover:shadow-xl"
+              >
+                Login & Send OTP
+              </Button>
+            </div>
           </CardContent>
         </Card>
 
