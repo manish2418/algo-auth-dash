@@ -36,18 +36,18 @@ const OTPVerification = () => {
   }, [loginMethod, loginValue, navigate]);
 
   const handleVerifyOTP = () => {
-    if (otp.length !== 6) {
+    if (otp.length !== 4) {
       toast({
         title: "Invalid OTP",
-        description: "Please enter the complete 6-digit code",
+        description: "Please enter the complete 4-digit code",
         variant: "destructive",
       });
       return;
     }
 
-    // For demo purposes, accept any 6-digit code
+    // For demo purposes, accept any 4-digit code
     // In real app, this would validate against the server
-    if (otp === "123456" || otp.length === 6) {
+    if (otp === "1234" || otp.length === 4) {
       toast({
         title: "Verification Successful",
         description: "Welcome to TradePro!",
@@ -117,7 +117,7 @@ const OTPVerification = () => {
             </div>
             <CardTitle className="text-2xl">Verify Your Identity</CardTitle>
             <CardDescription>
-              We've sent a 6-digit code to {maskValue(loginValue || '', loginMethod || '')}
+              We've sent a 4-digit code to {maskValue(loginValue || '', loginMethod || '')}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
@@ -125,7 +125,7 @@ const OTPVerification = () => {
               <OTPInput
                 value={otp}
                 onChange={setOtp}
-                length={6}
+                length={4}
                 className="justify-center"
               />
               
@@ -151,7 +151,7 @@ const OTPVerification = () => {
               <Button 
                 onClick={handleVerifyOTP}
                 className="w-full bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-primary-foreground font-semibold py-3 transition-all duration-300 shadow-lg hover:shadow-xl"
-                disabled={otp.length !== 6}
+                disabled={otp.length !== 4}
               >
                 Verify & Continue
               </Button>
@@ -169,7 +169,7 @@ const OTPVerification = () => {
         </Card>
 
         <div className="text-center mt-6 text-sm text-muted-foreground">
-          For demo: use any 6-digit code or "123456"
+          For demo: use any 4-digit code or "1234"
         </div>
       </div>
     </div>
