@@ -1,5 +1,5 @@
 // API Base URL - adjust this to match your backend server
-const API_BASE_URL = "http://localhost:8001";
+const API_BASE_URL = "http://localhost:8000";
 
 // JWT Token interface
 interface JwtPayload {
@@ -155,3 +155,4 @@ class ApiService {
 // Export singleton instance
 export const apiService = new ApiService();
 export default apiService;
+

@@ -10,22 +10,26 @@ import {
 } from "@/components/ui/card";
 import { OTPInput } from "@/components/ui/otp-input";
 import { toast } from "@/hooks/use-toast";
-import { ArrowLeft, TrendingUp, Timer } from "lucide-react";
+import { ArrowLeft, TrendingUp, Timer, Loader2 } from "lucide-react";
 import tradingBg from "@/assets/trading-bg.jpg";
-import apiService from "@/lib/api";
+import { apiService } from "@/lib/api";
 
 const OTPVerification = () => {
   const [otp, setOtp] = useState("");
   const [timeLeft, setTimeLeft] = useState(30);
   const [canResend, setCanResend] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isResending, setIsResending] = useState(false);
   const navigate = useNavigate();
 
   const loginMethod = localStorage.getItem("loginMethod");
   const loginValue = localStorage.getItem("loginValue");
+  const viewTokenData = localStorage.getItem('viewTokenData');
+  const jwtToken = localStorage.getItem('jwtToken');
 
   useEffect(() => {
-    if (!loginMethod || !loginValue) {
-      navigate("/");
+    if (!loginMethod || !loginValue || !jwtToken) {
+      navigate('/');
       return;
     }
 
@@ -40,7 +44,7 @@ const OTPVerification = () => {
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [loginMethod, loginValue, navigate]);
+  }, [loginMethod, loginValue, jwtToken, navigate]);
 
   const handleVerifyOTP = async () => {
     if (otp.length !== 4) {
@@ -68,8 +72,8 @@ const OTPVerification = () => {
       navigate("/dashboard");
     } else {
       toast({
-        title: "Invalid OTP",
-        description: "Please check your code and try again",
+        title: "Verification Error",
+        description: "An unexpected error occurred. Please try again.",
         variant: "destructive",
       });
     }
@@ -136,6 +140,7 @@ const OTPVerification = () => {
                 onChange={setOtp}
                 length={4}
                 className="justify-center"
+                disabled={isLoading}
               />
 
               <div className="text-center">
@@ -149,8 +154,16 @@ const OTPVerification = () => {
                     variant="ghost"
                     onClick={handleResendOTP}
                     className="text-primary hover:text-primary/80"
+                    disabled={isResending}
                   >
-                    Resend OTP
+                    {isResending ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Resending...
+                      </>
+                    ) : (
+                      "Resend OTP"
+                    )}
                   </Button>
                 )}
               </div>
@@ -160,15 +173,23 @@ const OTPVerification = () => {
               <Button
                 onClick={handleVerifyOTP}
                 className="w-full bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-primary-foreground font-semibold py-3 transition-all duration-300 shadow-lg hover:shadow-xl"
-                disabled={otp.length !== 4}
+                disabled={otp.length !== 4 || isLoading}
               >
-                Verify & Continue
+                {isLoading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Verifying...
+                  </>
+                ) : (
+                  "Verify & Continue"
+                )}
               </Button>
 
               <Button
                 variant="ghost"
                 onClick={() => navigate("/")}
                 className="w-full flex items-center gap-2"
+                disabled={isLoading}
               >
                 <ArrowLeft className="h-4 w-4" />
                 Back to Login
@@ -178,7 +199,7 @@ const OTPVerification = () => {
         </Card>
 
         <div className="text-center mt-6 text-sm text-muted-foreground">
-          For demo: use any 4-digit code or "1234"
+          Enter the 4-digit code sent to your device
         </div>
       </div>
     </div>
