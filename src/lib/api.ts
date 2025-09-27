@@ -1,7 +1,5 @@
-import { jwtDecode } from 'jwt-decode';
-
 // API Base URL - adjust this to match your backend server
-const API_BASE_URL = 'http://localhost:8000';
+const API_BASE_URL = "http://localhost:8001";
 
 // JWT Token interface
 interface JwtPayload {
@@ -52,7 +50,7 @@ class ApiService {
     try {
       const response = await fetch(`${this.baseUrl}${endpoint}`, {
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
           ...options.headers,
         },
         ...options,
@@ -63,7 +61,8 @@ class ApiService {
       if (!response.ok) {
         return {
           success: false,
-          error: data.detail || `HTTP ${response.status}: ${response.statusText}`,
+          error:
+            data.detail || `HTTP ${response.status}: ${response.statusText}`,
         };
       }
 
@@ -72,29 +71,30 @@ class ApiService {
         data,
       };
     } catch (error) {
-      console.error('API request error:', error);
+      console.error("API request error:", error);
       return {
         success: false,
-        error: error instanceof Error ? error.message : 'Network error occurred',
+        error:
+          error instanceof Error ? error.message : "Network error occurred",
       };
     }
   }
 
   // Helper function to decode JWT token and extract userId
-  decodeJwtToken(token: string): string | null {
-    try {
-      const decoded = jwtDecode<JwtPayload>(token);
-      return decoded.sub; // This is the userId
-    } catch (error) {
-      console.error('Error decoding JWT token:', error);
-      return null;
-    }
-  }
+  // decodeJwtToken(token: string): string | null {
+  //   try {
+  //     const decoded = jwtDecode<JwtPayload>(token);
+  //     return decoded.sub; // This is the userId
+  //   } catch (error) {
+  //     console.error('Error decoding JWT token:', error);
+  //     return null;
+  //   }
+  // }
 
   // Step 1: Generate view token (initial login)
   async generateViewToken(loginData: LoginRequest): Promise<ApiResponse> {
-    return this.makeRequest('/login/view-token', {
-      method: 'POST',
+    return this.makeRequest("/login/view-token", {
+      method: "POST",
       body: JSON.stringify(loginData),
     });
   }
@@ -102,7 +102,7 @@ class ApiService {
   // Step 2: Generate OTP using userId from JWT token
   async generateOtpFromToken(): Promise<ApiResponse> {
     // const userId = this.decodeJwtToken();
-    
+
     // if (!userId) {
     //   return {
     //     success: false,
@@ -115,28 +115,30 @@ class ApiService {
 
   // Step 2: Generate OTP (direct method)
   async generateOtp(): Promise<ApiResponse> {
-    return this.makeRequest('/login/otp/generate', {
-      method: 'POST',
+    return this.makeRequest("/login/otp/generate", {
+      method: "POST",
       // body: JSON.stringify(),
     });
   }
 
   // Step 3: Validate OTP and complete login
   async validateOtp(validateData: ValidateOtpRequest): Promise<ApiResponse> {
-    return this.makeRequest('/login/validate', {
-      method: 'POST',
+    return this.makeRequest("/login/validate", {
+      method: "POST",
       body: JSON.stringify(validateData),
     });
   }
 
   // Health check
   async healthCheck(): Promise<ApiResponse> {
-    return this.makeRequest('/health');
+    return this.makeRequest("/health");
   }
 
   // Get funds
   async getFunds(): Promise<ApiResponse> {
-    return this.makeRequest('/funds');
+    return this.makeRequest("/check-funds", {
+      method: "POST",
+    });
   }
 
   // Get user limits
@@ -152,4 +154,4 @@ class ApiService {
 
 // Export singleton instance
 export const apiService = new ApiService();
-export default apiService; 
+export default apiService;

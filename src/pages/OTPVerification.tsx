@@ -1,11 +1,18 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { OTPInput } from "@/components/ui/otp-input";
 import { toast } from "@/hooks/use-toast";
 import { ArrowLeft, TrendingUp, Timer } from "lucide-react";
 import tradingBg from "@/assets/trading-bg.jpg";
+import apiService from "@/lib/api";
 
 const OTPVerification = () => {
   const [otp, setOtp] = useState("");
@@ -13,12 +20,12 @@ const OTPVerification = () => {
   const [canResend, setCanResend] = useState(false);
   const navigate = useNavigate();
 
-  const loginMethod = localStorage.getItem('loginMethod');
-  const loginValue = localStorage.getItem('loginValue');
+  const loginMethod = localStorage.getItem("loginMethod");
+  const loginValue = localStorage.getItem("loginValue");
 
   useEffect(() => {
     if (!loginMethod || !loginValue) {
-      navigate('/');
+      navigate("/");
       return;
     }
 
@@ -35,7 +42,7 @@ const OTPVerification = () => {
     return () => clearInterval(timer);
   }, [loginMethod, loginValue, navigate]);
 
-  const handleVerifyOTP = () => {
+  const handleVerifyOTP = async () => {
     if (otp.length !== 4) {
       toast({
         title: "Invalid OTP",
@@ -44,20 +51,21 @@ const OTPVerification = () => {
       });
       return;
     }
-
+    const body = { otp: otp };
+    const otpResponse = await apiService.validateOtp(body);
     // For demo purposes, accept any 4-digit code
     // In real app, this would validate against the server
-    if (otp === "1234" || otp.length === 4) {
+    if (otpResponse.success) {
       toast({
         title: "Verification Successful",
         description: "Welcome to TradePro!",
       });
-      
+
       // Clear stored login data
-      localStorage.removeItem('loginMethod');
-      localStorage.removeItem('loginValue');
-      
-      navigate('/dashboard');
+      localStorage.removeItem("loginMethod");
+      localStorage.removeItem("loginValue");
+
+      navigate("/dashboard");
     } else {
       toast({
         title: "Invalid OTP",
@@ -71,7 +79,7 @@ const OTPVerification = () => {
     setTimeLeft(30);
     setCanResend(false);
     setOtp("");
-    
+
     toast({
       title: "OTP Resent",
       description: `New verification code sent to your ${loginMethod}`,
@@ -81,12 +89,12 @@ const OTPVerification = () => {
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
-    return `${mins}:${secs.toString().padStart(2, '0')}`;
+    return `${mins}:${secs.toString().padStart(2, "0")}`;
   };
 
   const maskValue = (value: string, type: string) => {
-    if (type === 'email') {
-      const [name, domain] = value.split('@');
+    if (type === "email") {
+      const [name, domain] = value.split("@");
       return `${name.slice(0, 2)}***@${domain}`;
     } else {
       return `***-***-${value.slice(-4)}`;
@@ -94,10 +102,10 @@ const OTPVerification = () => {
   };
 
   return (
-    <div 
+    <div
       className="min-h-screen flex items-center justify-center p-4 bg-cover bg-center bg-no-repeat"
-      style={{ 
-        backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.8)), url(${tradingBg})` 
+      style={{
+        backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.8)), url(${tradingBg})`,
       }}
     >
       <div className="w-full max-w-md">
@@ -117,7 +125,8 @@ const OTPVerification = () => {
             </div>
             <CardTitle className="text-2xl">Verify Your Identity</CardTitle>
             <CardDescription>
-              We've sent a 4-digit code to {maskValue(loginValue || '', loginMethod || '')}
+              We've sent a 4-digit code to{" "}
+              {maskValue(loginValue || "", loginMethod || "")}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
@@ -128,7 +137,7 @@ const OTPVerification = () => {
                 length={4}
                 className="justify-center"
               />
-              
+
               <div className="text-center">
                 {!canResend ? (
                   <p className="text-sm text-muted-foreground flex items-center gap-2">
@@ -148,17 +157,17 @@ const OTPVerification = () => {
             </div>
 
             <div className="space-y-3">
-              <Button 
+              <Button
                 onClick={handleVerifyOTP}
                 className="w-full bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-primary-foreground font-semibold py-3 transition-all duration-300 shadow-lg hover:shadow-xl"
                 disabled={otp.length !== 4}
               >
                 Verify & Continue
               </Button>
-              
+
               <Button
                 variant="ghost"
-                onClick={() => navigate('/')}
+                onClick={() => navigate("/")}
                 className="w-full flex items-center gap-2"
               >
                 <ArrowLeft className="h-4 w-4" />
