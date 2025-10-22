@@ -8,12 +8,14 @@ export interface MarketIndex {
 }
 
 export interface WatchlistStock {
+  name: string;
   symbol: string;
-  exchange: string;
   price: string | null;
   change: string | null;
   changePercent: string | null;
   isPositive?: boolean;
+  tok?: string;
+  exSeg?: string;
 }
 
 export interface MostBoughtStock {
@@ -44,4 +46,4 @@ export interface ResearchItem {
 export interface MarketUpdate {
   title: string;
   icon: any;
-} 
+}

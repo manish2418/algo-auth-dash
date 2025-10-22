@@ -13,6 +13,10 @@ import { toast } from "@/hooks/use-toast";
 import { ArrowLeft, TrendingUp, Timer, Loader2 } from "lucide-react";
 import tradingBg from "@/assets/trading-bg.jpg";
 import { apiService } from "@/lib/api";
+import {
+  KotakNeoProvider,
+  useKotakNeoContext,
+} from "@/contexts/KotakNeoContext";
 
 const OTPVerification = () => {
   const [otp, setOtp] = useState("");
@@ -24,12 +28,15 @@ const OTPVerification = () => {
 
   const loginMethod = localStorage.getItem("loginMethod");
   const loginValue = localStorage.getItem("loginValue");
-  const viewTokenData = localStorage.getItem('viewTokenData');
-  const jwtToken = localStorage.getItem('jwtToken');
+  const viewTokenData = localStorage.getItem("viewTokenData");
+  const jwtToken = localStorage.getItem("jwtToken");
+
+  //CONTEXT
+  const { connect, subscribeToSymbols } = useKotakNeoContext();
 
   useEffect(() => {
     if (!loginMethod || !loginValue || !jwtToken) {
-      navigate('/');
+      navigate("/");
       return;
     }
 
@@ -68,7 +75,12 @@ const OTPVerification = () => {
       // Clear stored login data
       localStorage.removeItem("loginMethod");
       localStorage.removeItem("loginValue");
-
+      const config = {
+        token: otpResponse.data.data.token,
+        sid: otpResponse.data.data.sid,
+      };
+      localStorage.setItem("LoginTradeToken", JSON.stringify(config));
+      await connect(config);
       navigate("/dashboard");
     } else {
       toast({

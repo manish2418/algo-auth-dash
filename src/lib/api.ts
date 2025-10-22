@@ -1,5 +1,5 @@
 // API Base URL - adjust this to match your backend server
-const API_BASE_URL = "http://localhost:8000";
+const API_BASE_URL = "http://localhost:8001";
 
 // JWT Token interface
 interface JwtPayload {
@@ -25,7 +25,6 @@ export interface GenerateOtpRequest {
 }
 
 export interface ValidateOtpRequest {
-  // userId: string;
   otp: string;
 }
 
@@ -33,6 +32,23 @@ export interface ApiResponse<T = any> {
   success: boolean;
   data?: T;
   error?: string;
+}
+
+export interface OrderPayload {
+  am: string; // AMO
+  dq: string; // Disclosed Quantity
+  es: string; // Exchange Segment
+  mp: string; // Market Protection
+  pc: string; // Product Code
+  pf: string; // Price Freeze
+  pr: string; // Price
+  pt: string; // Price Type (L, MKT, etc)
+  qt: string; // Quantity
+  rt: string; // Retention Type (DAY, IOC, etc)
+  tp: string; // Trigger Price
+  ts: string; // Trading Symbol
+  tt: string; // Transaction Type (B/S)
+  [key: string]: any;
 }
 
 // API Service Class
@@ -80,17 +96,6 @@ class ApiService {
     }
   }
 
-  // Helper function to decode JWT token and extract userId
-  // decodeJwtToken(token: string): string | null {
-  //   try {
-  //     const decoded = jwtDecode<JwtPayload>(token);
-  //     return decoded.sub; // This is the userId
-  //   } catch (error) {
-  //     console.error('Error decoding JWT token:', error);
-  //     return null;
-  //   }
-  // }
-
   // Step 1: Generate view token (initial login)
   async generateViewToken(loginData: LoginRequest): Promise<ApiResponse> {
     return this.makeRequest("/login/view-token", {
@@ -101,15 +106,6 @@ class ApiService {
 
   // Step 2: Generate OTP using userId from JWT token
   async generateOtpFromToken(): Promise<ApiResponse> {
-    // const userId = this.decodeJwtToken();
-
-    // if (!userId) {
-    //   return {
-    //     success: false,
-    //     error: 'Failed to decode JWT token to extract userId',
-    //   };
-    // }
-
     return this.generateOtp();
   }
 
@@ -117,7 +113,6 @@ class ApiService {
   async generateOtp(): Promise<ApiResponse> {
     return this.makeRequest("/login/otp/generate", {
       method: "POST",
-      // body: JSON.stringify(),
     });
   }
 
@@ -150,9 +145,45 @@ class ApiService {
     const searchParams = new URLSearchParams(params);
     return this.makeRequest(`/user/limits?${searchParams}`);
   }
+
+  async placeOrder(orderData: OrderPayload): Promise<ApiResponse> {
+    return this.makeRequest("/orders/normal", {
+      method: "POST",
+      body: JSON.stringify(orderData),
+    });
+  }
+
+  // Get Watchlist data according to user.
+  async getUserWatchList(user_id, watchlist_id): Promise<ApiResponse> {
+    return this.makeRequest(`/watchlists/${user_id}/${watchlist_id}`, {
+      method: "GET",
+    });
+  }
+  async getStockData(search: string): Promise<ApiResponse> {
+    return this.makeRequest(
+      `/get_stock_data?search=${encodeURIComponent(search)}`,
+      {
+        method: "GET",
+      }
+    );
+  }
+  async addStocksToWatchlist(data: {
+    user_id: string;
+    watchlist_id: string;
+    stocks: {
+      symbol: string;
+      name: string;
+      tok: string;
+      exSeg: string;
+    }[];
+  }): Promise<ApiResponse> {
+    return this.makeRequest("/watchlists/add-stocks", {
+      method: "POST",
+      body: JSON.stringify(data),
+    });
+  }
 }
 
 // Export singleton instance
 export const apiService = new ApiService();
 export default apiService;
-

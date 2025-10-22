@@ -1,5 +1,23 @@
-import { TrendingUp, DollarSign, BarChart3, Star, Gauge, Target, BookOpen, Radio, Megaphone } from "lucide-react";
-import { MarketIndex, WatchlistStock, MostBoughtStock, InvestmentProduct, InvestingTool, ResearchItem, MarketUpdate } from "@/types/dashboard";
+import {
+  TrendingUp,
+  DollarSign,
+  BarChart3,
+  Star,
+  Gauge,
+  Target,
+  BookOpen,
+  Radio,
+  Megaphone,
+} from "lucide-react";
+import {
+  MarketIndex,
+  WatchlistStock,
+  MostBoughtStock,
+  InvestmentProduct,
+  InvestingTool,
+  ResearchItem,
+  MarketUpdate,
+} from "@/types/dashboard";
 
 // Market indices data
 export const marketIndices: MarketIndex[] = [
@@ -22,67 +40,22 @@ export const marketIndices: MarketIndex[] = [
 // Watchlist stocks data
 export const watchlistStocks: WatchlistStock[] = [
   {
-    symbol: "OLAELEC",
-    exchange: "NSE",
-    price: null,
-    change: null,
-    changePercent: null,
+    symbol: "TATASTEEL-EQ",
+    name: "TATASTEEL",
+    price: "172.8",
+    change: "2.15",
+    changePercent: "1.22",
+    tok: "3499",
+    exSeg: "nse_cm",
   },
   {
-    symbol: "ENTERO",
-    exchange: "NSE",
-    price: "876.00",
-    change: "-207.20",
-    changePercent: "(-19.13%)",
-    isPositive: false,
-  },
-  {
-    symbol: "COSMOFIRST",
-    exchange: "NSE",
-    price: "859.00",
-    change: "+9.35",
-    changePercent: "(+1.10%)",
-    isPositive: true,
-  },
-  {
-    symbol: "EIHAHOTELS",
-    exchange: "NSE",
-    price: "374.00",
-    change: "-0.15",
-    changePercent: "(-0.04%)",
-    isPositive: false,
-  },
-  {
-    symbol: "ZOMATO",
-    exchange: "NSE",
-    price: "320.00",
-    change: "-1.00",
-    changePercent: "(-0.31%)",
-    isPositive: false,
-  },
-  {
-    symbol: "KIRLOSBROS",
-    exchange: "NSE",
-    price: "1973.70",
-    change: "+19.50",
-    changePercent: "(+1.00%)",
-    isPositive: true,
-  },
-  {
-    symbol: "NCC",
-    exchange: "NSE",
-    price: "218.00",
-    change: "+15.49",
-    changePercent: "(+7.65%)",
-    isPositive: true,
-  },
-  {
-    symbol: "SENSEX",
-    exchange: "BSE",
-    price: "80119.03",
-    change: "-307.43",
-    changePercent: "(-0.38%)",
-    isPositive: false,
+    symbol: "RVNL-EQ",
+    name: "RVNL",
+    price: "346.8",
+    change: "-8.32",
+    changePercent: "-2.15",
+    tok: "9552",
+    exSeg: "nse_cm",
   },
 ];
 
@@ -175,4 +148,4 @@ export const marketUpdates: MarketUpdate[] = [
     title: "Live news",
     icon: Radio,
   },
-]; 
+];

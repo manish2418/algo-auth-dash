@@ -1,8 +1,27 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
-import { TrendingUp, TrendingDown, DollarSign, BarChart3, Star, Gauge, Target, BookOpen, Radio, Megaphone, Wallet, Activity } from "lucide-react";
-import { MostBoughtStock, InvestmentProduct, InvestingTool, ResearchItem, MarketUpdate } from "@/types/dashboard";
+import {
+  TrendingUp,
+  TrendingDown,
+  DollarSign,
+  BarChart3,
+  Star,
+  Gauge,
+  Target,
+  BookOpen,
+  Radio,
+  Megaphone,
+  Wallet,
+  Activity,
+} from "lucide-react";
+import {
+  MostBoughtStock,
+  InvestmentProduct,
+  InvestingTool,
+  ResearchItem,
+  MarketUpdate,
+} from "@/types/dashboard";
 
 interface MainContentProps {
   funds?: number;
@@ -13,17 +32,17 @@ interface MainContentProps {
 
 /**
  * Main Content Component
- * 
+ *
  * Contains the main dashboard content with:
  * - Portfolio overview cards (Funds, P&L, Active Positions)
  * - Main tabs (Stocks, F&O, Mutual funds)
  * - Various sections for each tab
  */
-export const MainContent = ({ 
-  funds = 0, 
-  todayPnL = 2650.25, 
-  todayChange = 2.15, 
-  activePositions = 3 
+export const MainContent = ({
+  funds = 0,
+  todayPnL = 2650.25,
+  todayChange = 2.15,
+  activePositions = 3,
 }: MainContentProps) => {
   // Data arrays (these would come from props or API calls in real app)
   const mostBoughtStocks: MostBoughtStock[] = [
@@ -119,23 +138,25 @@ export const MainContent = ({
         {/* Funds Card */}
         <Card className="bg-gradient-to-br from-blue-500/10 to-blue-600/10 border-blue-500/20">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-gray-300">Funds</CardTitle>
+            <CardTitle className="text-sm font-medium text-gray-300">
+              Funds
+            </CardTitle>
             <Wallet className="h-4 w-4 text-blue-400" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-white">
               ₹{Number(funds).toFixed(2)}
             </div>
-            <p className="text-xs text-gray-400 mt-1">
-              Available for trading
-            </p>
+            <p className="text-xs text-gray-400 mt-1">Available for trading</p>
           </CardContent>
         </Card>
 
         {/* Today's P&L Card */}
         <Card className="bg-gradient-to-br from-green-500/10 to-green-600/10 border-green-500/20">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-gray-300">Today's P&L</CardTitle>
+            <CardTitle className="text-sm font-medium text-gray-300">
+              Today's P&L
+            </CardTitle>
             <TrendingUp className="h-4 w-4 text-green-400" />
           </CardHeader>
           <CardContent>
@@ -151,11 +172,15 @@ export const MainContent = ({
         {/* Active Positions Card */}
         <Card className="bg-gradient-to-br from-purple-500/10 to-purple-600/10 border-purple-500/20">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-gray-300">Active Positions</CardTitle>
+            <CardTitle className="text-sm font-medium text-gray-300">
+              Active Positions
+            </CardTitle>
             <Activity className="h-4 w-4 text-purple-400" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-white">{activePositions}</div>
+            <div className="text-2xl font-bold text-white">
+              {activePositions}
+            </div>
             <p className="text-xs text-gray-400 mt-1">
               Across {activePositions} securities
             </p>
@@ -166,13 +191,19 @@ export const MainContent = ({
       {/* Main Tabs */}
       <Tabs defaultValue="stocks" className="w-full">
         <TabsList className="grid w-full grid-cols-3 mb-6 bg-gray-800">
-          <TabsTrigger value="stocks" className="data-[state=active]:bg-blue-600">
+          <TabsTrigger
+            value="stocks"
+            className="data-[state=active]:bg-blue-600"
+          >
             Stocks
           </TabsTrigger>
           <TabsTrigger value="fno" className="data-[state=active]:bg-blue-600">
             F&O
           </TabsTrigger>
-          <TabsTrigger value="mutual-funds" className="data-[state=active]:bg-blue-600">
+          <TabsTrigger
+            value="mutual-funds"
+            className="data-[state=active]:bg-blue-600"
+          >
             Mutual funds
           </TabsTrigger>
         </TabsList>
@@ -180,24 +211,26 @@ export const MainContent = ({
         <TabsContent value="stocks" className="space-y-6">
           {/* Most bought on Kotak */}
           <MostBoughtSection stocks={mostBoughtStocks} />
-          
+
           {/* Investment products */}
           <InvestmentProductsSection products={investmentProducts} />
-          
+
           {/* Investing tools */}
           <InvestingToolsSection tools={investingTools} />
-          
+
           {/* Research */}
-          <ResearchSection items={researchItems} />
-          
+          {/* <ResearchSection items={researchItems} /> */}
+
           {/* Market updates */}
-          <MarketUpdatesSection updates={marketUpdates} />
+          {/* <MarketUpdatesSection updates={marketUpdates} /> */}
         </TabsContent>
 
         <TabsContent value="fno">
           <div className="text-center py-12">
             <h3 className="text-lg font-semibold mb-2">F&O Trading</h3>
-            <p className="text-gray-400">Futures & Options content coming soon</p>
+            <p className="text-gray-400">
+              Futures & Options content coming soon
+            </p>
           </div>
         </TabsContent>
 
@@ -215,10 +248,15 @@ export const MainContent = ({
 // Individual section components
 const MostBoughtSection = ({ stocks }: { stocks: MostBoughtStock[] }) => (
   <div>
-    <h3 className="text-lg font-semibold mb-4 text-white">Most bought on Kotak</h3>
+    <h3 className="text-lg font-semibold mb-4 text-white">
+      Most bought on Kotak
+    </h3>
     <div className="grid grid-cols-4 gap-4">
       {stocks.map((stock, index) => (
-        <Card key={index} className="bg-gray-800 border-gray-700 hover:bg-gray-750 transition-colors">
+        <Card
+          key={index}
+          className="bg-gray-800 border-gray-700 hover:bg-gray-750 transition-colors"
+        >
           <CardContent className="p-4">
             <div className="flex items-center gap-3 mb-2">
               <div className="w-8 h-8 bg-blue-600 rounded flex items-center justify-center">
@@ -249,12 +287,21 @@ const MostBoughtSection = ({ stocks }: { stocks: MostBoughtStock[] }) => (
   </div>
 );
 
-const InvestmentProductsSection = ({ products }: { products: InvestmentProduct[] }) => (
+const InvestmentProductsSection = ({
+  products,
+}: {
+  products: InvestmentProduct[];
+}) => (
   <div>
-    <h3 className="text-lg font-semibold mb-4 text-white">Investment products</h3>
+    <h3 className="text-lg font-semibold mb-4 text-white">
+      Investment products
+    </h3>
     <div className="grid grid-cols-4 gap-4">
       {products.map((product, index) => (
-        <Card key={index} className="bg-gray-800 border-gray-700 hover:bg-gray-750 transition-colors">
+        <Card
+          key={index}
+          className="bg-gray-800 border-gray-700 hover:bg-gray-750 transition-colors"
+        >
           <CardContent className="p-4">
             <div className="flex items-center gap-3 mb-2">
               <product.icon className="h-6 w-6 text-blue-400" />
@@ -277,7 +324,10 @@ const InvestingToolsSection = ({ tools }: { tools: InvestingTool[] }) => (
     <h3 className="text-lg font-semibold mb-4 text-white">Investing tools</h3>
     <div className="grid grid-cols-4 gap-4">
       {tools.map((tool, index) => (
-        <Card key={index} className="bg-gray-800 border-gray-700 relative hover:bg-gray-750 transition-colors">
+        <Card
+          key={index}
+          className="bg-gray-800 border-gray-700 relative hover:bg-gray-750 transition-colors"
+        >
           {tool.badge && (
             <Badge className="absolute -top-2 -right-2 bg-green-600 text-white text-xs">
               {tool.badge}
@@ -300,7 +350,10 @@ const ResearchSection = ({ items }: { items: ResearchItem[] }) => (
     <h3 className="text-lg font-semibold mb-4 text-white">Research</h3>
     <div className="grid grid-cols-4 gap-4">
       {items.map((item, index) => (
-        <Card key={index} className="bg-gray-800 border-gray-700 hover:bg-gray-750 transition-colors">
+        <Card
+          key={index}
+          className="bg-gray-800 border-gray-700 hover:bg-gray-750 transition-colors"
+        >
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
               <item.icon className="h-6 w-6 text-blue-400" />
@@ -318,7 +371,10 @@ const MarketUpdatesSection = ({ updates }: { updates: MarketUpdate[] }) => (
     <h3 className="text-lg font-semibold mb-4 text-white">Market updates</h3>
     <div className="grid grid-cols-4 gap-4">
       {updates.map((update, index) => (
-        <Card key={index} className="bg-gray-800 border-gray-700 hover:bg-gray-750 transition-colors">
+        <Card
+          key={index}
+          className="bg-gray-800 border-gray-700 hover:bg-gray-750 transition-colors"
+        >
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
               <update.icon className="h-6 w-6 text-blue-400" />
