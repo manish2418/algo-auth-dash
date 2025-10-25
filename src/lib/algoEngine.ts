@@ -1,13 +1,12 @@
-// lib/algoEngine.ts
-
+// lib/algoEngineV2.ts
 import type { MarketData } from "@/lib/kotakNeoHslib";
 
-// Parameters
-const VOL_WINDOW = 20; // number of ticks to calculate volatility
-const VOL_THRESHOLD = 0.02; // threshold for volatility
-const IMB_THRESHOLD = 0.2; // threshold for order-book imbalance
+const VOL_WINDOW = 30;
+const VOL_DECAY = 0.8;
+const IMB_THRESHOLD = 0.25;
+const BASE_SPREAD = 0.15;
 
-const tickHistory: Record<string, number[]> = {}; // store LTPs per symbol
+const tickHistory: Record<string, number[]> = {};
 
 function calculateVolatility(symbol: string, newPrice: number): number {
   if (!tickHistory[symbol]) tickHistory[symbol] = [];
@@ -19,51 +18,86 @@ function calculateVolatility(symbol: string, newPrice: number): number {
   if (prices.length < 2) return 0;
 
   const mean = prices.reduce((a, b) => a + b, 0) / prices.length;
-  const variance =
-    prices.reduce((a, b) => a + (b - mean) ** 2, 0) / prices.length;
-
+  let variance = 0;
+  for (let i = 0; i < prices.length; i++) {
+    const weight = Math.pow(VOL_DECAY, prices.length - i); // recent ticks weigh more
+    variance += weight * (prices[i] - mean) ** 2;
+  }
+  variance /= prices.length;
   return Math.sqrt(variance) / mean;
 }
 
-function parseTick(data: MarketData) {
+function parseTick(data: any) {
   return {
+    symbol: data.symbol,
     name: data.name,
-    ltp: data.ltp,
-    volume: data.volume,
-    high: data.high,
-    low: data.low,
-    open: data.open,
-    close: data.close,
+    exchange: data.exchange,
+    ltp: parseFloat(data.ltp),
+    change: parseFloat(data.change),
+    changePercent: parseFloat(data.changePercent),
+    bidPrice: parseFloat(data.bidPrice),
+    askPrice: parseFloat(data.askPrice),
+    bidQty: parseFloat(data.bidQty),
+    askQty: parseFloat(data.askQty),
+    lastTradeQty: parseFloat(data.lastTradeQty),
+    open: parseFloat(data.open),
+    high: parseFloat(data.high),
+    low: parseFloat(data.low),
+    close: parseFloat(data.close),
+    volume: parseFloat(data.volume),
+    turnover: parseFloat(data.turnover),
+    upperCircuit: parseFloat(data.upperCircuit),
+    lowerCircuit: parseFloat(data.lowerCircuit),
+    yearlyHigh: parseFloat(data.yearlyHigh),
+    yearlyLow: parseFloat(data.yearlyLow),
+    feedTimestamp: data.feedTimestamp, // string (from API)
+    lastTradeTime: data.lastTradeTime, // string (from API)
+    systemTimestamp: Number(data.systemTimestamp), // numeric timestamp
+    timestamp: Number(data.timestamp),
   };
 }
 
-export function runAlgoEngine(data: MarketData) {
+export function runAlgoEngineV2(data: MarketData) {
   const tick = parseTick(data);
+  const volatility = calculateVolatility(tick.symbol, tick.ltp);
+  const imbalance =
+    (tick.bidQty - tick.askQty) / Math.max(tick.bidQty + tick.askQty, 1);
+  const spread = tick.askPrice - tick.bidPrice;
+  const mid = (tick.askPrice + tick.bidPrice) / 2;
+  const dynamicSpread =
+    BASE_SPREAD * (1 + volatility * 10 + Math.abs(imbalance) * 2);
+  const buyQuote = mid - dynamicSpread / 2;
+  const sellQuote = mid + dynamicSpread / 2;
+  const confidence = 1 - Math.min(volatility * 20 + Math.abs(imbalance), 1);
 
-  // Calculate volatility
-  const volatility = calculateVolatility(tick.name, tick.ltp);
+  // ----- Decision Logic -----
+  let action: "BUY" | "SELL" | "HOLD" = "HOLD";
+  let reason = "";
 
-  // Derive order-book metrics (stubbed for demo)
-  const bid = tick.ltp - 0.1;
-  const ask = tick.ltp + 0.1;
-  const mid = (bid + ask) / 2;
-  const spread = ask - bid;
-  const imbalance = Math.random() * 0.4 - 0.2; // fake imbalance between -0.2 to +0.2
-
-  // Decision engine
-  if (Math.abs(imbalance) < IMB_THRESHOLD && volatility < VOL_THRESHOLD) {
-    console.log(
-      `🟢 Adding liquidity for ${tick.name} | Buy: ${(mid - spread / 2).toFixed(
-        2
-      )} | Sell: ${(mid + spread / 2).toFixed(2)}`
-    );
-  } else {
-    console.log(
-      `🔴 Cancel quotes for ${tick.name} | Volatility=${volatility.toFixed(
-        4
-      )}, Imbalance=${imbalance.toFixed(3)}`
-    );
+  if (confidence > 0.7 && imbalance > 0.2) {
+    action = "BUY";
+    reason = "Strong buy-side pressure with stable volatility";
+  } else if (confidence > 0.7 && imbalance < -0.2) {
+    action = "SELL";
+    reason = "Strong sell-side pressure with stable volatility";
   }
 
-  return { volatility, imbalance, mid, spread };
+  if (confidence < 0.5) {
+    action = "HOLD";
+    reason = "Market unstable — no trade";
+  }
+
+  return {
+    symbol: tick.symbol,
+    ltp: tick.ltp,
+    volatility,
+    imbalance,
+    mid,
+    dynamicSpread,
+    confidence,
+    buyQuote,
+    sellQuote,
+    action,
+    reason,
+  };
 }

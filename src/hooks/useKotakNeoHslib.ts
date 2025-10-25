@@ -6,7 +6,7 @@ import {
   MarketData,
   SocketCallbacks,
 } from "@/lib/kotakNeoHslib";
-import { runAlgoEngine } from "@/lib/algoEngine";
+import { runAlgoEngineV2 } from "@/lib/algoEngine";
 
 export interface UseKotakNeoHslibReturn {
   isConnected: boolean;
@@ -76,7 +76,7 @@ export const useKotakNeoHslib = (): UseKotakNeoHslibReturn => {
           return newMap;
         });
         // Run your algo engine for live data
-        const metrics = runAlgoEngine(data);
+        const metrics = runAlgoEngineV2(data);
 
         // Optionally visualize or store metrics somewhere
         console.log(`[ALGO] ${data.name} →`, metrics);

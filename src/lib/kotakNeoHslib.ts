@@ -15,18 +15,45 @@ declare global {
 
 // Market data types
 export interface MarketData {
-  symbol: string;
-  exchange: string;
-  ltp: number;
-  change: number;
-  changePercent: number;
-  volume: number;
-  high: number;
-  low: number;
-  open: number;
-  close: number;
+  symbol: string; // e.g. "TATASTEEL-EQ"
+  token?: string; // Kotak token ID, e.g. "3499"
+  exchange: string; // "NSE" | "BSE"
+
+  // Price data
+  ltp: number; // Last traded price
+  change: number; // Absolute change from previous close
+  changePercent: number; // Percentage change from previous close
+  open: number; // Day's opening price
+  high: number; // Day's high
+  low: number; // Day's low
+  close: number; // Previous closing price
+
+  // Volume & turnover
+  volume: number; // Total traded volume
+  turnover: number; // Total traded value in rupees
+
+  // Order book data
+  bidPrice: number; // Best bid price
+  askPrice: number; // Best ask price
+  bidQty: number; // Quantity at best bid
+  askQty: number; // Quantity at best ask
+
+  // Circuits and yearly range
+  upperCircuit: number; // Upper circuit limit
+  lowerCircuit: number; // Lower circuit limit
+  yearlyHigh: number; // 52-week high
+  yearlyLow: number; // 52-week low
+
+  // Last trade info
+  lastTradeQty: number; // Quantity of last trade
+  lastTradeTime: string; // Time of last trade (e.g. "24/10/2025 15:59:49")
+
+  // Timestamps
+  feedTimestamp: string; // Timestamp from broker feed (e.g. "24/10/2025 20:13:39")
+  systemTimestamp: number; // Local system timestamp (Date.now())
   timestamp: number;
-  name: string;
+  // Misc
+  name: string; // Optional name or alias (same as symbol usually)
 }
 
 // Socket event callbacks
@@ -320,6 +347,22 @@ class KotakNeoHslib {
       close: parseFloat(data.c) || 0,
       timestamp: new Date().getTime(), // current timestamp
       name: name,
+      bidPrice: parseFloat(data.bp) || 0,
+      askPrice: parseFloat(data.ap) || 0,
+      bidQty: parseInt(data.bq) || 0,
+      askQty: parseInt(data.tbq) || 0,
+
+      upperCircuit: parseFloat(data.ucl) || 0,
+      lowerCircuit: parseFloat(data.lcl) || 0,
+      yearlyHigh: parseFloat(data.yh) || 0,
+      yearlyLow: parseFloat(data.yl) || 0,
+
+      lastTradeQty: parseInt(data.ltq) || 0,
+      lastTradeTime: data.ltt || "",
+      turnover: parseFloat(data.to) || 0,
+
+      feedTimestamp: data.fdtm || "",
+      systemTimestamp: Date.now(),
     };
 
     console.log(
