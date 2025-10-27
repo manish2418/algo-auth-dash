@@ -33,7 +33,9 @@ export interface ApiResponse<T = any> {
   data?: T;
   error?: string;
 }
-
+export interface LogTradeRequest {
+  message: string;
+}
 export interface OrderPayload {
   am: string; // AMO
   dq: string; // Disclosed Quantity
@@ -178,6 +180,12 @@ class ApiService {
     }[];
   }): Promise<ApiResponse> {
     return this.makeRequest("/watchlists/add-stocks", {
+      method: "POST",
+      body: JSON.stringify(data),
+    });
+  }
+  async logTrade(data: LogTradeRequest): Promise<ApiResponse> {
+    return this.makeRequest("/logTrade", {
       method: "POST",
       body: JSON.stringify(data),
     });

@@ -7,6 +7,7 @@ import {
   SocketCallbacks,
 } from "@/lib/kotakNeoHslib";
 import { runAlgoEngineV2 } from "@/lib/algoEngine";
+import { runAlgoEngineV3 } from "@/lib/algoEnginev3";
 
 export interface UseKotakNeoHslibReturn {
   isConnected: boolean;
@@ -76,10 +77,14 @@ export const useKotakNeoHslib = (): UseKotakNeoHslibReturn => {
           return newMap;
         });
         // Run your algo engine for live data
-        const metrics = runAlgoEngineV2(data);
+        if (data.ltp > 0) {
+          const metrics = runAlgoEngineV2(data);
 
-        // Optionally visualize or store metrics somewhere
-        console.log(`[ALGO] ${data.name} →`, metrics);
+          const metrics2 = runAlgoEngineV3(data);
+
+          // Optionally visualize or store metrics somewhere
+          console.log(`[ALGO] ${data.name} →`, metrics);
+        }
       },
       onOrderUpdate: (order: any) => {
         setOrders((prev) => {
